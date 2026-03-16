@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eid Mubarak — From Bisma Asif</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #c8607a;
+    --rose-light: #e88aa0;
+    --rose-pale: #fce0e8;
+    --deep: #080518;
+    --deep2: #0e0a2a;
+    --deep3: #130e3a;
+    --midnight: #1a1040;
+    --cream: #f5ead8;
+    --font-display: 'Playfair Display', serif;
+    --font-arabic: 'Amiri', serif;
+    --font-body: 'Cormorant Garamond', serif;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--deep);
+    color: var(--cream);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  #cursor {
+    position: fixed; width: 10px; height: 10px;
+    background: var(--rose); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.08s;
+    mix-blend-mode: screen;
+  }
+  #cursor-trail {
+    position: fixed; width: 28px; height: 28px;
+    border: 1px solid rgba(200,96,122,0.35); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: left 0.14s ease, top 0.14s ease;
+  }
+
+  #starCanvas {
+    position: fixed; inset: 0; width: 100vw; height: 100vh;
+    z-index: 0; pointer-events: none;
+  }
+  #particleCanvas {
+    position: fixed; inset: 0; pointer-events: none; z-index: 3;
+  }
+
+  .pattern-overlay {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.035;
+    background-image:
+      repeating-linear-gradient(45deg, var(--rose) 0, var(--rose) 1px, transparent 0, transparent 50%),
+      repeating-linear-gradient(-45deg, var(--rose) 0, var(--rose) 1px, transparent 0, transparent 50%);
+    background-size: 30px 30px;
+  }
+
+  .firefly {
+    position: fixed; border-radius: 50%; pointer-events: none; z-index: 2;
+    background: radial-gradient(circle, rgba(232,138,160,0.95) 0%, transparent 70%);
+    animation: fireflyFloat var(--ff-dur) ease-in-out infinite alternate;
+  }
+  @keyframes fireflyFloat {
+    0%   { transform: translate(0,0) scale(1); opacity: var(--ff-lo); }
+    50%  { opacity: var(--ff-hi); }
+    100% { transform: translate(var(--ff-x), var(--ff-y)) scale(1.4); opacity: var(--ff-lo); }
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative; min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    overflow: hidden; z-index: 1;
+    padding: 60px 20px 40px;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 130%; height: 50%;
+    background: radial-gradient(ellipse at 50% 100%, rgba(22,12,60,0.95) 0%, rgba(26,90,110,0.2) 55%, transparent 72%);
+    z-index: 1; pointer-events: none;
+  }
+
+  /* rope */
+  .rope { position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; z-index: 7; }
+
+  /* Lanterns */
+  .lanterns-wrap {
+    position: absolute; top: 0; width: 100%; max-width: 960px;
+    height: 200px; pointer-events: none; z-index: 8;
+    left: 50%; transform: translateX(-50%);
+  }
+  .lantern-svg {
+    position: absolute; top: 0;
+    opacity: 0;
+    animation:
+      lanternSwing var(--ls-dur) ease-in-out var(--ls-delay) infinite alternate,
+      lanternIn 1s ease var(--ls-fi) forwards;
+    transform-origin: top center;
+    filter: drop-shadow(0 4px 14px var(--ls-color));
+  }
+  @keyframes lanternSwing {
+    from { transform: rotate(var(--ls-from)); }
+    to   { transform: rotate(var(--ls-to)); }
+  }
+  @keyframes lanternIn {
+    from { opacity: 0; transform: translateY(-24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Crescent */
+  .crescent-wrap {
+    position: absolute; top: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; opacity: 0;
+    animation: moonEntry 2s cubic-bezier(.22,.68,0,1.4) forwards 0.3s;
+  }
+  @keyframes moonEntry {
+    0%  { opacity: 0; transform: translateX(-50%) translateY(-70px) scale(0.5); }
+    100%{ opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  }
+  .crescent-glow {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,96,122,0.2) 0%, transparent 70%);
+    animation: pulseGlow 3s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+  @keyframes pulseGlow {
+    from { transform: translate(-50%,-50%) scale(0.9); opacity: 0.5; }
+    to   { transform: translate(-50%,-50%) scale(1.5); opacity: 1; }
+  }
+
+  /* Content */
+  .content-wrap {
+    position: relative; z-index: 10; text-align: center;
+    margin-top: 130px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .eid-arabic {
+    font-family: var(--font-arabic); font-size: clamp(3.8rem, 11vw, 7.5rem);
+    font-weight: 700; color: var(--rose-light);
+    text-shadow: 0 0 50px rgba(232,138,160,0.55), 0 0 100px rgba(200,96,122,0.3);
+    line-height: 1;
+    opacity: 0; transform: translateY(30px);
+    animation: revealUp 1.2s cubic-bezier(.22,.68,0,1.2) forwards 1.2s;
+  }
+  .eid-sub-arabic {
+    font-family: var(--font-arabic); font-size: clamp(1.2rem, 3.5vw, 2.2rem);
+    color: rgba(232,138,160,0.65); margin-top: 4px;
+    opacity: 0; animation: revealUp 1s ease forwards 1.6s;
+  }
+  .divider-ornament {
+    display: flex; align-items: center; gap: 14px; margin: 18px 0;
+    opacity: 0; animation: revealUp 1s ease forwards 1.9s;
+  }
+  .divider-line { width: 110px; height: 1px; background: linear-gradient(90deg,transparent,var(--rose),transparent); }
+  .divider-diamond {
+    width: 9px; height: 9px; background: var(--rose); transform: rotate(45deg);
+    box-shadow: 0 0 10px var(--rose);
+  }
+  .eid-english {
+    font-family: var(--font-display); font-size: clamp(1rem, 3vw, 1.65rem);
+    font-weight: 400; letter-spacing: 0.38em; text-transform: uppercase; color: var(--cream);
+    opacity: 0; animation: revealUp 1s ease forwards 2.1s;
+  }
+  .tagline {
+    font-family: var(--font-body); font-size: clamp(0.92rem, 2.2vw, 1.2rem);
+    font-style: italic; color: rgba(245,234,216,0.6); margin-top: 10px; letter-spacing: 0.04em;
+    opacity: 0; animation: revealUp 1s ease forwards 2.4s;
+  }
+  .from-block {
+    margin-top: 30px;
+    opacity: 0; animation: revealUp 1s ease forwards 2.7s;
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+  }
+  .from-label {
+    font-size: 0.78rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: rgba(245,234,216,0.4);
+  }
+  .from-name {
+    font-family: var(--font-display); font-size: clamp(1.6rem, 4.5vw, 2.8rem);
+    font-weight: 700; color: var(--rose-light);
+    text-shadow: 0 0 24px rgba(200,96,122,0.5); letter-spacing: 0.1em;
+  }
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(26px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Mosque */
+  .mosque-wrap {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 960px; z-index: 5; pointer-events: none;
+    opacity: 0; animation: mosqueRise 2s ease forwards 0.4s;
+  }
+  @keyframes mosqueRise {
+    from { opacity: 0; transform: translateX(-50%) translateY(40px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* Scroll hint */
+  .scroll-hint {
+    position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 6px;
+    opacity: 0; animation: fadeIn 1s ease forwards 3.8s;
+  }
+  .scroll-hint span { font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(245,234,216,0.3); }
+  .scroll-dot {
+    width: 1px; height: 38px; background: linear-gradient(180deg, var(--rose) 0%, transparent 100%);
+    animation: scrollDrop 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollDrop {
+    0%   { transform: scaleY(0) translateY(-100%); opacity: 0; }
+    50%  { opacity: 1; }
+    100% { transform: scaleY(1) translateY(0); opacity: 0; }
+  }
+  @keyframes fadeIn { from{opacity:0}to{opacity:1} }
+
+  /* ─── SECTION 2 ─── */
+  .wishes-section {
+    position: relative; z-index: 1; padding: 100px 24px 80px;
+    background: linear-gradient(180deg, var(--deep) 0%, var(--deep2) 60%, var(--deep3) 100%);
+  }
+  .wishes-section::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 1px; height: 80px; background: linear-gradient(180deg, transparent, var(--rose), transparent);
+  }
+  .wishes-inner { max-width: 780px; margin: 0 auto; text-align: center; }
+
+  .section-label {
+    font-size: 0.68rem; letter-spacing: 0.45em; text-transform: uppercase;
+    color: var(--rose); margin-bottom: 24px; display: block;
+  }
+  .wishes-heading {
+    font-family: var(--font-display); font-size: clamp(1.9rem, 5vw, 3.4rem);
+    font-weight: 400; color: var(--cream); line-height: 1.25; margin-bottom: 40px;
+  }
+  .wishes-heading em { color: var(--rose-light); font-style: italic; }
+
+  .wish-cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+    gap: 20px; margin: 40px 0;
+  }
+  .wish-card {
+    border: 1px solid rgba(200,96,122,0.18); border-radius: 2px; padding: 30px 20px 26px;
+    background: rgba(255,255,255,0.018); position: relative; overflow: hidden;
+    transition: border-color 0.3s, transform 0.35s;
+    cursor: default;
+  }
+  .wish-card::after {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--rose), transparent);
+    transform: scaleX(0); transition: transform 0.45s ease;
+  }
+  .wish-card:hover { border-color: rgba(200,96,122,0.45); transform: translateY(-5px); }
+  .wish-card:hover::after { transform: scaleX(1); }
+
+  .wish-icon { width: 46px; height: 46px; margin: 0 auto 16px; }
+  .wish-title { font-family: var(--font-display); font-size: 1.08rem; color: var(--rose-light); margin-bottom: 10px; letter-spacing: 0.04em; }
+  .wish-text { font-size: 0.92rem; color: rgba(245,234,216,0.58); line-height: 1.75; font-style: italic; }
+
+  /* ─── SECTION 3 ─── */
+  .message-section {
+    position: relative; z-index: 1; padding: 80px 24px 100px;
+    background: var(--deep3);
+  }
+  .message-inner { max-width: 700px; margin: 0 auto; text-align: center; }
+
+  .ornament-line {
+    display: flex; align-items: center; gap: 18px; justify-content: center; margin-bottom: 40px;
+  }
+  .ornament-line .line { flex: 1; max-width: 90px; height: 1px; background: rgba(200,96,122,0.28); }
+
+  .message-quote {
+    font-family: var(--font-body); font-size: clamp(1.1rem, 2.8vw, 1.55rem);
+    font-style: italic; color: var(--cream); line-height: 1.85;
+    position: relative; padding: 0 24px;
+  }
+  .message-quote::before {
+    content: '\201C'; font-family: var(--font-display); font-size: 5.5rem;
+    color: rgba(200,96,122,0.12); position: absolute; top: -25px; left: 0; line-height: 1;
+  }
+  .quranic-ref {
+    margin-top: 18px; font-size: 0.78rem; letter-spacing: 0.22em;
+    text-transform: uppercase; color: rgba(200,96,122,0.48);
+  }
+  .personal-message {
+    margin-top: 52px; padding: 34px 36px;
+    border-left: 2px solid var(--rose); border-top: 1px solid rgba(200,96,122,0.12);
+    text-align: left; background: rgba(200,96,122,0.025);
+  }
+  .personal-message p {
+    font-size: clamp(0.97rem, 2vw, 1.18rem); line-height: 1.95; color: rgba(245,234,216,0.78);
+  }
+  .personal-message p + p { margin-top: 16px; }
+  .personal-message .sig {
+    margin-top: 24px; font-family: var(--font-display); font-style: italic;
+    color: var(--rose-light); font-size: 1.12rem;
+  }
+
+  /* Dua box */
+  .dua-box {
+    margin-top: 60px; padding: 36px; border: 1px solid rgba(200,96,122,0.22);
+    position: relative; text-align: center;
+    background: radial-gradient(ellipse at center, rgba(200,96,122,0.05) 0%, transparent 70%);
+  }
+  .dua-box::before, .dua-box::after {
+    content: ''; position: absolute; width: 20px; height: 20px;
+    border-color: var(--rose); border-style: solid; opacity: 0.5;
+  }
+  .dua-box::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+  .dua-box::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+  .dua-arabic { font-family: var(--font-arabic); font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--rose-light); line-height: 1.6; }
+  .dua-trans { font-family: var(--font-body); font-style: italic; color: rgba(245,234,216,0.5); font-size: 0.95rem; margin-top: 10px; }
+
+   /* ─── FOOTER ─── */
+  footer {
+    position: relative; z-index: 1; background: var(--deep); padding: 44px 24px 36px;
+    text-align: center; border-top: 1px solid rgba(200,96,122,0.1); overflow: hidden;
+  }
+  footer::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rose-light), var(--rose-pale), var(--rose-light), transparent);
+    animation: footerLine 4s ease-in-out infinite alternate;
+  }
+  @keyframes footerLine {
+    from { width: 120px; opacity: 0.5; }
+    to   { width: 280px; opacity: 1; }
+  }
+  .footer-arabic {
+    font-family: var(--font-arabic); font-size: 1.7rem; color: var(--rose-light);
+    margin-bottom: 6px;
+    animation: footerGlow 3s ease-in-out infinite alternate;
+  }
+  @keyframes footerGlow {
+    from { text-shadow: 0 0 10px rgba(232,138,160,0.3); }
+    to   { text-shadow: 0 0 28px rgba(232,138,160,0.7), 0 0 50px rgba(200,96,122,0.3); }
+  }
+  .footer-sub { font-size: 0.74rem; letter-spacing: 0.28em; text-transform: uppercase; color:white; }
+  .footer-year { margin-top: 18px; font-size: 0.68rem; color: white; letter-spacing: 0.16em; }
+  .footer-dots {
+    display: flex; justify-content: center; gap: 10px; margin-top: 24px;
+  }
+  .footer-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--rose); opacity: 0.3;
+    animation: dotBlink 2s ease-in-out var(--dd) infinite alternate;
+  }
+  @keyframes dotBlink {
+    from { opacity: 0.2; transform: scale(0.8); background: var(--rose); }
+    to   { opacity: 0.9; transform: scale(1.5); background: var(--rose-light); }
+  }
+
+  /* Scroll reveal */
+  .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.85s ease, transform 0.85s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.12s; }
+  .reveal-delay-2 { transition-delay: 0.28s; }
+  .reveal-delay-3 { transition-delay: 0.44s; }
+  .reveal-delay-4 { transition-delay: 0.6s; }
+
+ /* ─── Dua Sender ─── */
+  .dua-sender {
+    margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+  .dua-input {
+    width: 100%; max-width: 480px; background: rgba(200,96,122,0.08);
+    border: 1px solid rgba(200,96,122,0.28); color: var(--cream);
+    font-family: var(--font-body); font-size: 1rem; padding: 14px 20px;
+    outline: none; transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .dua-input::placeholder { color: rgba(245,234,216,0.3); }
+  .dua-input:focus { border-color: var(--rose-light); box-shadow: 0 0 20px rgba(200,96,122,0.18); }
+  .dua-btn {
+    padding: 12px 36px; background: transparent;
+    border: 1px solid var(--rose-light); color: var(--rose-light);
+    font-family: var(--font-display); font-size: 0.85rem; letter-spacing: 0.2em;
+    text-transform: uppercase; cursor: pointer;
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s, transform 0.2s;
+  }
+  .dua-btn:hover {
+    background: var(--rose-light); color: var(--deep);
+    box-shadow: 0 0 30px rgba(200,96,122,0.45);
+    transform: scale(1.04);
+  }
+  .dua-response {
+    font-family: var(--font-arabic); font-size: 1.5rem; color: var(--rose-light);
+    opacity: 0; transition: opacity 0.6s; min-height: 2rem; text-align: center;
+  }
+  .dua-response.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+<div class="pattern-overlay"></div>
+<canvas id="starCanvas"></canvas>
+<canvas id="particleCanvas"></canvas>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+
+  <!-- Rope across top -->
+  <svg class="rope" viewBox="0 0 960 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 24 Q120 70 240 38 Q360 6 480 38 Q600 70 720 38 Q840 6 960 24"
+          stroke="rgba(177, 106, 124, 0.8) " stroke-width="1.5" fill="none"/>
+    <!-- rope knot dots -->
+    <circle cx="240" cy="38" r="3" fill="rgba(180,140,40,0.5)"/>
+    <circle cx="480" cy="38" r="3" fill="rgba(180,140,40,0.5)"/>
+    <circle cx="720" cy="38" r="3" fill="rgba(180,140,40,0.5)"/>
+  </svg>
+
+  <!-- Lanterns -->
+  <div class="lanterns-wrap">
+    <!-- Lantern 1 far left — hot pink -->
+    <svg class="lantern-svg" style="left:2%;--ls-dur:4.6s;--ls-delay:0s;--ls-from:-8deg;--ls-to:7deg;--ls-color:rgba(232,80,140,0.75);--ls-fi:0.6s" width="50" height="108" viewBox="0 0 50 108">
+      <line x1="25" y1="0" x2="25" y2="14" stroke="#f070b0" stroke-width="1.5"/>
+      <rect x="11" y="14" width="28" height="7" rx="2.5" fill="#e8508a"/>
+      <rect x="9" y="21" width="32" height="56" rx="5" fill="#1a0010" stroke="#e8508a" stroke-width="1"/>
+      <rect x="13" y="25" width="7" height="48" rx="3" fill="#ff60a0" opacity="0.65"/>
+      <rect x="22" y="25" width="7" height="48" rx="3" fill="#ff60a0" opacity="0.65"/>
+      <rect x="31" y="25" width="7" height="48" rx="3" fill="#ff60a0" opacity="0.65"/>
+      <rect x="11" y="77" width="28" height="7" rx="2.5" fill="#e8508a"/>
+      <ellipse cx="25" cy="49" rx="12" ry="18" fill="#ff80b8" opacity="0.16"/>
+      <line x1="19" y1="84" x2="17" y2="97" stroke="#e8508a" stroke-width="1"/>
+      <line x1="25" y1="84" x2="25" y2="100" stroke="#e8508a" stroke-width="1"/>
+      <line x1="31" y1="84" x2="33" y2="97" stroke="#e8508a" stroke-width="1"/>
+      <circle cx="17" cy="98" r="2.2" fill="#ffaacc"/>
+      <circle cx="25" cy="101" r="2.2" fill="#ffaacc"/>
+      <circle cx="33" cy="98" r="2.2" fill="#ffaacc"/>
+    </svg>
+    <!-- Lantern 2 left — deep blue -->
+    <svg class="lantern-svg" style="left:16%;--ls-dur:3.9s;--ls-delay:-1.6s;--ls-from:-6deg;--ls-to:8deg;--ls-color:rgba(40,120,255,0.7);--ls-fi:0.9s" width="40" height="88" viewBox="0 0 40 88">
+      <line x1="20" y1="0" x2="20" y2="11" stroke="#6090ff" stroke-width="1.2"/>
+      <rect x="7" y="11" width="26" height="6" rx="2" fill="#3060e0"/>
+      <rect x="6" y="17" width="28" height="44" rx="4" fill="#000820" stroke="#3060e0" stroke-width="0.8"/>
+      <rect x="10" y="21" width="5" height="36" rx="2" fill="#4080ff" opacity="0.65"/>
+      <rect x="17" y="21" width="5" height="36" rx="2" fill="#4080ff" opacity="0.65"/>
+      <rect x="24" y="21" width="5" height="36" rx="2" fill="#4080ff" opacity="0.65"/>
+      <rect x="7" y="61" width="26" height="6" rx="2" fill="#3060e0"/>
+      <line x1="14" y1="67" x2="12" y2="77" stroke="#3060e0" stroke-width="0.9"/>
+      <line x1="20" y1="67" x2="20" y2="79" stroke="#3060e0" stroke-width="0.9"/>
+      <line x1="26" y1="67" x2="28" y2="77" stroke="#3060e0" stroke-width="0.9"/>
+      <circle cx="12" cy="78" r="1.8" fill="#90b8ff"/>
+      <circle cx="20" cy="80" r="1.8" fill="#90b8ff"/>
+      <circle cx="28" cy="78" r="1.8" fill="#90b8ff"/>
+    </svg>
+    <!-- Lantern 3 center big — pink & blue blend -->
+    <svg class="lantern-svg" style="left:50%;margin-left:-30px;--ls-dur:5.2s;--ls-delay:-2.2s;--ls-from:-5deg;--ls-to:5deg;--ls-color:rgba(200,80,200,0.75);--ls-fi:0.4s" width="60" height="124" viewBox="0 0 60 124">
+      <line x1="30" y1="0" x2="30" y2="16" stroke="#c060e0" stroke-width="2"/>
+      <rect x="11" y="16" width="38" height="9" rx="3" fill="#9040c0"/>
+      <rect x="9" y="25" width="42" height="66" rx="7" fill="#0a0020" stroke="#9040c0" stroke-width="1.2"/>
+      <rect x="14" y="30" width="9" height="56" rx="3.5" fill="#c060ff" opacity="0.55"/>
+      <rect x="26" y="30" width="9" height="56" rx="3.5" fill="#e060b0" opacity="0.55"/>
+      <rect x="38" y="30" width="9" height="56" rx="3.5" fill="#c060ff" opacity="0.55"/>
+      <rect x="11" y="91" width="38" height="9" rx="3" fill="#9040c0"/>
+      <ellipse cx="30" cy="58" rx="16" ry="22" fill="#d070e8" opacity="0.13"/>
+      <line x1="21" y1="100" x2="18" y2="114" stroke="#9040c0" stroke-width="1.2"/>
+      <line x1="30" y1="100" x2="30" y2="117" stroke="#9040c0" stroke-width="1.2"/>
+      <line x1="39" y1="100" x2="42" y2="114" stroke="#9040c0" stroke-width="1.2"/>
+      <circle cx="18" cy="115" r="2.8" fill="#e0a0ff"/>
+      <circle cx="30" cy="118" r="2.8" fill="#ffaadd"/>
+      <circle cx="42" cy="115" r="2.8" fill="#e0a0ff"/>
+    </svg>
+    <!-- Lantern 4 right — electric blue -->
+    <svg class="lantern-svg" style="right:16%;--ls-dur:4.3s;--ls-delay:-1.1s;--ls-from:-7deg;--ls-to:6deg;--ls-color:rgba(50,140,255,0.7);--ls-fi:1s" width="42" height="92" viewBox="0 0 42 92">
+      <line x1="21" y1="0" x2="21" y2="11" stroke="#60a0ff" stroke-width="1.2"/>
+      <rect x="8" y="11" width="26" height="6" rx="2" fill="#2858d0"/>
+      <rect x="7" y="17" width="28" height="48" rx="4" fill="#000a1e" stroke="#2858d0" stroke-width="0.8"/>
+      <rect x="11" y="21" width="5" height="40" rx="2" fill="#3878ff" opacity="0.65"/>
+      <rect x="18" y="21" width="5" height="40" rx="2" fill="#3878ff" opacity="0.65"/>
+      <rect x="25" y="21" width="5" height="40" rx="2" fill="#3878ff" opacity="0.65"/>
+      <rect x="8" y="65" width="26" height="6" rx="2" fill="#2858d0"/>
+      <line x1="15" y1="71" x2="13" y2="82" stroke="#2858d0" stroke-width="0.9"/>
+      <line x1="21" y1="71" x2="21" y2="84" stroke="#2858d0" stroke-width="0.9"/>
+      <line x1="27" y1="71" x2="29" y2="82" stroke="#2858d0" stroke-width="0.9"/>
+      <circle cx="13" cy="83" r="1.8" fill="#80b0ff"/>
+      <circle cx="21" cy="85" r="1.8" fill="#80b0ff"/>
+      <circle cx="29" cy="83" r="1.8" fill="#80b0ff"/>
+    </svg>
+    <!-- Lantern 5 far right — soft pink -->
+    <svg class="lantern-svg" style="right:2%;--ls-dur:4.9s;--ls-delay:-3.2s;--ls-from:-7deg;--ls-to:9deg;--ls-color:rgba(240,100,160,0.75);--ls-fi:0.7s" width="48" height="104" viewBox="0 0 48 104">
+      <line x1="24" y1="0" x2="24" y2="13" stroke="#f090c0" stroke-width="1.5"/>
+      <rect x="10" y="13" width="28" height="7" rx="2.5" fill="#d05888"/>
+      <rect x="8" y="20" width="32" height="54" rx="5" fill="#180010" stroke="#d05888" stroke-width="1"/>
+      <rect x="12" y="24" width="7" height="46" rx="3" fill="#f070a8" opacity="0.65"/>
+      <rect x="21" y="24" width="7" height="46" rx="3" fill="#f070a8" opacity="0.65"/>
+      <rect x="30" y="24" width="7" height="46" rx="3" fill="#f070a8" opacity="0.65"/>
+      <rect x="10" y="74" width="28" height="7" rx="2.5" fill="#d05888"/>
+      <line x1="18" y1="81" x2="16" y2="93" stroke="#d05888" stroke-width="1"/>
+      <line x1="24" y1="81" x2="24" y2="96" stroke="#d05888" stroke-width="1"/>
+      <line x1="30" y1="81" x2="32" y2="93" stroke="#d05888" stroke-width="1"/>
+      <circle cx="16" cy="94" r="2.2" fill="#ffb0d8"/>
+      <circle cx="24" cy="97" r="2.2" fill="#ffb0d8"/>
+      <circle cx="32" cy="94" r="2.2" fill="#ffb0d8"/>
+    </svg>
+  </div>
+
+  <!-- Crescent + stars -->
+  <div class="crescent-wrap">
+    <div class="crescent-glow"></div>
+    <svg width="140" height="112" viewBox="0 0 140 112" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="65" cy="56" rx="54" ry="54" fill="rgba(232,138,160,0.07)"/>
+      <circle cx="62" cy="57" r="38" fill="#c8607a"/>
+      <circle cx="80" cy="48" r="32" fill="#080518"/>
+      <!-- main star -->
+      <g transform="translate(108,26)">
+        <polygon points="0,-12 2.8,-3.9 11.4,-3.9 4.6,1.5 7.4,9.7 0,4.6 -7.4,9.7 -4.6,1.5 -11.4,-3.9 -2.8,-3.9" fill="#c8607a"/>
+      </g>
+      <!-- small stars -->
+      <g transform="translate(22,22)">
+        <polygon points="0,-5.5 1.3,-1.7 5.2,-1.7 2.1,0.7 3.4,4.5 0,2.1 -3.4,4.5 -2.1,0.7 -5.2,-1.7 -1.3,-1.7" fill="#c8607a" opacity="0.65"/>
+      </g>
+      <g transform="translate(118,74)">
+        <polygon points="0,-4 1,-1.2 3.8,-1.2 1.5,0.5 2.4,3.3 0,1.5 -2.4,3.3 -1.5,0.5 -3.8,-1.2 -1,-1.2" fill="#c8607a" opacity="0.55"/>
+      </g>
+      <g transform="translate(8,76)">
+        <polygon points="0,-3.5 0.9,-1.1 3.3,-1.1 1.3,0.4 2.1,2.9 0,1.3 -2.1,2.9 -1.3,0.4 -3.3,-1.1 -0.9,-1.1" fill="#c8607a" opacity="0.4"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Main content -->
+  <div class="content-wrap">
+    <div class="eid-arabic">عيد مبارك</div>
+    <div class="eid-sub-arabic">وعيد سعيد</div>
+    <div class="divider-ornament">
+      <div class="divider-line"></div>
+      <div class="divider-diamond"></div>
+      <div class="divider-line"></div>
+    </div>
+    <div class="eid-english">Eid Mubarak</div>
+    <div class="tagline">May Allah's blessings illuminate every path you walk</div>
+    <div class="from-block">
+      <span class="from-label">with heartfelt wishes from</span>
+      <span class="from-name">Bisma Asif</span>
+    </div>
+  </div>
+
+  <!-- Mosque silhouette -->
+  <div class="mosque-wrap">
+    <svg width="100%" viewBox="0 0 960 280" preserveAspectRatio="xMidYMax meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="245" width="960" height="35" fill="#07041a"/>
+      <!-- far side buildings -->
+      <rect x="20" y="188" width="70" height="92" fill="#0b062a" opacity="0.55"/>
+      <rect x="870" y="192" width="68" height="88" fill="#0b062a" opacity="0.55"/>
+      <!-- side wings -->
+      <rect x="108" y="168" width="200" height="112" fill="#100830"/>
+      <ellipse cx="208" cy="165" rx="80" ry="60" fill="#100830"/>
+      <rect x="652" y="168" width="200" height="112" fill="#100830"/>
+      <ellipse cx="752" cy="165" rx="80" ry="60" fill="#100830"/>
+      <!-- wing side domes -->
+      <ellipse cx="138" cy="178" rx="42" ry="30" fill="#0d062a"/>
+      <ellipse cx="822" cy="178" rx="42" ry="30" fill="#0d062a"/>
+      <!-- main body -->
+      <rect x="295" y="130" width="370" height="150" fill="#120940"/>
+      <!-- main dome -->
+      <ellipse cx="480" cy="118" rx="122" ry="94" fill="#120940"/>
+      <!-- drum -->
+      <rect x="392" y="118" width="176" height="26" fill="#0f0732"/>
+      <!-- finial -->
+      <line x1="480" y1="22" x2="480" y2="48" stroke="#c8607a" stroke-width="2"/>
+      <polygon points="480,18 473,36 487,36" fill="#c8607a"/>
+      <circle cx="480" cy="16" r="5.5" fill="#c8607a"/>
+      <!--  -->
+      <!-- main minarets -->
+      <rect x="306" y="72" width="30" height="208" rx="6" fill="#0c0628"/>
+      <ellipse cx="321" cy="69" rx="20" ry="28" fill="#0c0628"/>
+      <polygon points="321,42 314,67 328,67" fill="#c8607a"/>
+      <circle cx="321" cy="40" r="4.5" fill="#c8607a"/>
+      <rect x="624" y="72" width="30" height="208" rx="6" fill="#0c0628"/>
+      <ellipse cx="639" cy="69" rx="20" ry="28" fill="#0c0628"/>
+      <polygon points="639,42 632,67 646,67" fill="#c8607a"/>
+      <circle cx="639" cy="40" r="4.5" fill="#c8607a"/>
+      <!-- wing minarets -->
+      <rect x="120" y="116" width="22" height="164" rx="4" fill="#0a0520"/>
+      <ellipse cx="131" cy="114" rx="14" ry="20" fill="#0a0520"/>
+      <polygon points="131,92 125,112 137,112" fill="#c8607a"/>
+      <circle cx="131" cy="90" r="3.5" fill="#c8607a"/>
+      <rect x="818" y="116" width="22" height="164" rx="4" fill="#0a0520"/>
+      <ellipse cx="829" cy="114" rx="14" ry="20" fill="#0a0520"/>
+      <polygon points="829,92 823,112 835,112" fill="#c8607a"/>
+      <circle cx="829" cy="90" r="3.5" fill="#c8607a"/>
+      <!-- dome windows -->
+      <ellipse cx="480" cy="140" rx="24" ry="36" fill="#1e1058" stroke="#c8607a" stroke-width="1"/>
+      <ellipse cx="408" cy="158" rx="15" ry="23" fill="#1e1058" stroke="#c8607a" stroke-width="0.8"/>
+      <ellipse cx="552" cy="158" rx="15" ry="23" fill="#1e1058" stroke="#c8607a" stroke-width="0.8"/>
+      <!-- side wing windows -->
+      <ellipse cx="208" cy="180" rx="18" ry="26" fill="#1a0e48" stroke="#c8607a" stroke-width="0.8"/>
+      <ellipse cx="752" cy="180" rx="18" ry="26" fill="#1a0e48" stroke="#c8607a" stroke-width="0.8"/>
+      <!-- door -->
+      <path d="M458 280 L458 212 Q480 190 502 212 L502 280 Z" fill="#1e1058" stroke="#c8607a" stroke-width="1.2"/>
+      <!-- archway details -->
+      <path d="M360 212 Q385 196 410 212" stroke="#c8607a" stroke-width="0.6" fill="none" opacity="0.4"/>
+      <path d="M550 212 Q575 196 600 212" stroke="#c8607a" stroke-width="0.6" fill="none" opacity="0.4"/>
+      <!-- ground glow -->
+      <ellipse cx="480" cy="276" rx="380" ry="20" fill="#2a1a70" opacity="0.45"/>
+      <!-- light glow on windows -->
+      <ellipse cx="480" cy="140" rx="15" ry="23" fill="#f0c060" opacity="0.055"/>
+      <ellipse cx="208" cy="180" rx="11" ry="17" fill="#f0c060" opacity="0.045"/>
+      <ellipse cx="752" cy="180" rx="11" ry="17" fill="#f0c060" opacity="0.045"/>
+    </svg>
+  </div>
+
+  <div class="scroll-hint">
+    <span>scroll</span>
+    <div class="scroll-dot"></div>
+  </div>
+
+</section>
+
+<!-- ─── BLESSINGS SECTION ─── -->
+<section class="wishes-section">
+  <div class="wishes-inner">
+    <span class="section-label reveal">✦ Blessings of Eid ✦</span>
+    <h2 class="wishes-heading reveal reveal-delay-1">
+      May this <em>blessed occasion</em> bring<br>light into every corner of your life
+    </h2>
+    <div class="wish-cards">
+      <div class="wish-card reveal reveal-delay-1">
+        <svg class="wish-icon" viewBox="0 0 46 46" fill="none">
+          <circle cx="23" cy="23" r="21" stroke="rgba(200,96,122,0.28)" stroke-width="1"/>
+          <path d="M23 9 L26 19h10l-8 5.8 3 9.2-8-5.4-8 5.4 3-9.2L11 19h10Z" fill="#c8607a" opacity="0.9"/>
+        </svg>
+        <div class="wish-title">Peace &amp; Serenity</div>
+        <div class="wish-text">May your heart find the tranquility that only faith can bring this Eid.</div>
+      </div>
+      <div class="wish-card reveal reveal-delay-2">
+        <svg class="wish-icon" viewBox="0 0 46 46" fill="none">
+          <circle cx="23" cy="23" r="21" stroke="rgba(200,96,122,0.28)" stroke-width="1"/>
+          <path d="M23 13 C23 13 14 19.5 14 27 C14 31.7 18 35.5 23 35.5 C28 35.5 32 31.7 32 27 C32 19.5 23 13 23 13Z" stroke="#c8607a" stroke-width="1.5" fill="none"/>
+          <circle cx="23" cy="26" r="4.5" fill="#c8607a" opacity="0.8"/>
+        </svg>
+        <div class="wish-title">Joy &amp; Happiness</div>
+        <div class="wish-text">Wishing you laughter that fills every room and smiles that never fade.</div>
+      </div>
+      <div class="wish-card reveal reveal-delay-3">
+        <svg class="wish-icon" viewBox="0 0 46 46" fill="none">
+          <circle cx="23" cy="23" r="21" stroke="rgba(200,96,122,0.28)" stroke-width="1"/>
+          <path d="M23 12 L27 20.5 L36 21.8 L29.5 28 L31.2 37 L23 32.8 L14.8 37 L16.5 28 L10 21.8 L19 20.5 Z" stroke="#c8607a" stroke-width="1.4" fill="none" stroke-linejoin="round"/>
+        </svg>
+        <div class="wish-title">Abundance &amp; Barakah</div>
+        <div class="wish-text">May Allah shower His endless blessings and rizq upon you and yours.</div>
+      </div>
+      <div class="wish-card reveal reveal-delay-4">
+        <svg class="wish-icon" viewBox="0 0 46 46" fill="none">
+          <circle cx="23" cy="23" r="21" stroke="rgba(200,96,122,0.28)" stroke-width="1"/>
+          <path d="M13 23 C13 23 18 13 23 13 C28 13 33 23 33 23 C33 23 28 33 23 33 C18 33 13 23 13 23Z" stroke="#c8607a" stroke-width="1.5" fill="none"/>
+          <circle cx="23" cy="23" r="3.5" fill="#c8607a"/>
+        </svg>
+        <div class="wish-title">Health &amp; Strength</div>
+        <div class="wish-text">May you and your family be blessed with good health throughout the year.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MESSAGE SECTION ─── -->
+<section class="message-section">
+  <div class="message-inner">
+    <div class="ornament-line reveal">
+      <div class="line"></div>
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+        <polygon points="17,4 20.5,13.5 30,13.5 22.5,19.5 25.5,29 17,23.5 8.5,29 11.5,19.5 4,13.5 13.5,13.5" fill="rgba(200,96,122,0.65)"/>
+      </svg>
+      <div class="line"></div>
+    </div>
+
+    <blockquote class="message-quote reveal reveal-delay-1">
+      Indeed, with hardship comes ease. And verily, with hardship comes ease.
+    </blockquote>
+    <div class="quranic-ref reveal reveal-delay-2">— Surah Ash-Sharh, 94:5–6</div>
+
+    <div class="personal-message reveal reveal-delay-2">
+      <p>
+        This Eid, I want to take a moment to remind you how truly special you are to me.
+        The journey of this Ramadan — with all its nights of prayer, its moments of reflection,
+        and its quiet acts of gratitude — has been made more beautiful because of people like you
+        in my life. As we celebrate today, I pray that every dua you whispered in the stillness
+        of the night finds its way to Allah's mercy and is answered a thousandfold.
+      </p>
+      <p>
+        May this Eid bring you closer to everything you love, and may every blessing find its
+        way to your doorstep. You deserve all the good this world has to offer.
+      </p>
+      <div class="sig">— Bisma Asif &nbsp;✦&nbsp; Eid Al-Fitr 1446H</div>
+    </div>
+
+   <!-- Interactive Dua Sender -->
+    <div class="dua-sender reveal reveal-delay-3">
+      <p style="font-style:italic;color:rgba(245,234,216,0.4);font-size:0.9rem;letter-spacing:0.05em">Share your name — receive a personalised dua</p>
+      <input class="dua-input" id="duaInput" type="text" placeholder="Enter your name…" maxlength="40"/>
+      <button class="dua-btn" onclick="sendDua()">Send Dua ✦</button>
+      <div class="dua-response" id="duaResponse"></div>
+    </div>
+
+    <!-- Dua box -->
+    <div class="dua-box reveal reveal-delay-3">
+      <div class="dua-arabic">تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُمْ</div>
+      <div class="dua-trans">May Allah accept from us and from you</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-arabic">عيد مبارك</div>
+  <div class="footer-sub">Eid Al-Fitr · 1446 AH · From Bisma Asif <i class="fa-solid fa-heart" style="color: #e88aa0;"></i></div>
+  <div class="footer-year">May every year find you in peace, faith &amp; gratitude</div>
+  <div class="footer-dots">
+    <div class="footer-dot" style="--dd:0s"></div>
+    <div class="footer-dot" style="--dd:0.2s"></div>
+    <div class="footer-dot" style="--dd:0.4s"></div>
+    <div class="footer-dot" style="--dd:0.6s"></div>
+    <div class="footer-dot" style="--dd:0.8s"></div>
+  </div>
+</footer>
+
+<script>
+/* ── Cursor ── */
+const cur = document.getElementById('cursor');
+const trail = document.getElementById('cursor-trail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove', e => {
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+document.addEventListener('mousedown', () => { cur.classList.add('clicking'); trail.classList.add('clicking'); });
+document.addEventListener('mouseup',   () => { cur.classList.remove('clicking'); trail.classList.remove('clicking'); });
+function moveTrail(){
+  tx+=(mx-tx)*0.12; ty+=(my-ty)*0.12;
+  trail.style.left=tx+'px'; trail.style.top=ty+'px';
+  requestAnimationFrame(moveTrail);
+}
+moveTrail();
+
+/* ── Stars ── */
+const sc=document.getElementById('starCanvas');
+const sx=sc.getContext('2d');
+let stars=[],W,H;
+function resizeStar(){
+  W=sc.width=window.innerWidth; H=sc.height=window.innerHeight;
+  stars=Array.from({length:220},()=>({
+    x:Math.random()*W, y:Math.random()*H,
+    r:Math.random()*1.9+0.2,
+    a:Math.random(), da:(Math.random()-0.5)*0.004,
+    col: Math.random()<0.2 ? 'rgba(232,138,160,' : 'rgba(255,252,240,'
+  }));
+}
+resizeStar();
+window.addEventListener('resize',resizeStar);
+(function animStars(){
+  sx.clearRect(0,0,W,H);
+  stars.forEach(s=>{
+    s.a+=s.da; if(s.a<0.05||s.a>1)s.da*=-1;
+    sx.beginPath(); sx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    sx.fillStyle=s.col+s.a+')'; sx.fill();
+  });
+  requestAnimationFrame(animStars);
+})();
+
+/* ── Particles ── */
+const pc=document.getElementById('particleCanvas');
+const px=pc.getContext('2d');
+function resizePart(){pc.width=window.innerWidth;pc.height=window.innerHeight;}
+resizePart();
+window.addEventListener('resize',resizePart);
+const pts=Array.from({length:65},()=>({
+  x:Math.random()*window.innerWidth,
+  y:Math.random()*window.innerHeight,
+  vx:(Math.random()-0.5)*0.45,
+  vy:(Math.random()-0.5)*0.3-0.08,
+  r:Math.random()*3.5+1,
+  a:Math.random()*0.35+0.05,
+  da:(Math.random()-0.5)*0.003
+}));
+(function animPart(){
+  px.clearRect(0,0,pc.width,pc.height);
+  pts.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy;
+    p.a+=p.da; if(p.a<0.02||p.a>0.42)p.da*=-1;
+    if(p.x<0)p.x=pc.width; if(p.x>pc.width)p.x=0;
+    if(p.y<0)p.y=pc.height; if(p.y>pc.height)p.y=0;
+    const g=px.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*2.2);
+    g.addColorStop(0,`rgba(232,138,160,${p.a})`);
+    g.addColorStop(1,'rgba(232,138,160,0)');
+    px.beginPath(); px.arc(p.x,p.y,p.r*2.2,0,Math.PI*2);
+    px.fillStyle=g; px.fill();
+  });
+  requestAnimationFrame(animPart);
+})();
+
+/* ── Fireflies ── */
+for(let i=0;i<16;i++){
+  const f=document.createElement('div');
+  f.className='firefly';
+  const sz=Math.random()*5+3;
+  f.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}vw;top:${Math.random()*80}vh;--ff-dur:${(Math.random()*4+3).toFixed(1)}s;--ff-lo:${(Math.random()*0.2+0.04).toFixed(2)};--ff-hi:${(Math.random()*0.45+0.3).toFixed(2)};--ff-x:${(Math.random()*70-35).toFixed(0)}px;--ff-y:${(Math.random()*70-35).toFixed(0)}px;animation-delay:${(Math.random()*6).toFixed(1)}s`;
+  document.body.appendChild(f);
+}
+
+
+/* ── Scroll reveal ── */
+const revEls=document.querySelectorAll('.reveal');
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:0.14});
+revEls.forEach(el=>io.observe(el));
+
+/* ── Sparkle burst ── */
+function spawnSparkles(x, y) {
+  const colors = ['#e88aa0','#fce0e8','#c8607a','#ffb8cc','#fff0f5'];
+  for (let i = 0; i < 22; i++) {
+    const el = document.createElement('div');
+    const angle = Math.random() * Math.PI * 2;
+    const dist  = Math.random() * 80 + 30;
+    const size  = Math.random() * 6 + 3;
+    el.style.cssText = `position:fixed;width:${size}px;height:${size}px;border-radius:50%;background:${colors[Math.floor(Math.random()*colors.length)]};left:${x}px;top:${y}px;pointer-events:none;z-index:9997;transform:translate(-50%,-50%);transition:left .7s ease-out,top .7s ease-out,opacity .7s ease-out;opacity:1;`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.left = (x + Math.cos(angle) * dist) + 'px';
+      el.style.top  = (y + Math.sin(angle) * dist) + 'px';
+      el.style.opacity = '0';
+    });
+    setTimeout(() => el.remove(), 750);
+  }
+}
+
+/* ── Dua Sender ── */
+const duas=[
+  n=>`يا الله، بارك في ${n} وأعطها الصحة والسعادة والسلام في هذا العيد وفي كل يوم ♡`,
+  n=>`اللهم احفظ ${n} في ذهابها وإيابها، وبارك في أهلها وأحبابها ✦`,
+  n=>`يا رب، امنح ${n} من فضلك ورحمتك ما تستحق، وأسعد قلبها في كل لحظة 🌙`,
+  n=>`اللهم اجعل هذا العيد مباركاً على ${n} وعلى من تحب، وتقبّل منها صالح الأعمال ✨`,
+];
+function sendDua(){
+  const name=document.getElementById('duaInput').value.trim()||'أنتِ';
+  const el=document.getElementById('duaResponse');
+  const btn=document.querySelector('.dua-btn');
+  const r=btn.getBoundingClientRect();
+  el.classList.remove('show');
+  el.textContent=duas[Math.floor(Math.random()*duas.length)](name);
+  setTimeout(()=>el.classList.add('show'),100);
+  spawnSparkles(r.left + r.width/2, r.top + r.height/2);
+}
+document.getElementById('duaInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendDua();});
+</script>
+</body>
+</html>
