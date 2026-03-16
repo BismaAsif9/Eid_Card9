@@ -617,7 +617,7 @@
   </div>
 
   <div class="scroll-hint">
-    <span>scroll</span>
+    <span></span>
     <div class="scroll-dot"></div>
   </div>
 
@@ -813,6 +813,16 @@ for(let i=0;i<16;i++){
   document.body.appendChild(f);
 }
 
+/* ── Parallax on scroll ── */
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  const cw  = document.querySelector('.content-wrap');
+  const mw  = document.querySelector('.mosque-wrap');
+  const crw = document.querySelector('.crescent-wrap');
+  if (cw)  cw.style.transform  = `translateY(${y * 0.22}px)`;
+  if (mw)  mw.style.transform  = `translateX(-50%) translateY(${y * 0.12}px)`;
+  if (crw) crw.style.transform = `translateX(-50%) translateY(${y * 0.32}px)`;
+});
 
 /* ── Scroll reveal ── */
 const revEls=document.querySelectorAll('.reveal');
